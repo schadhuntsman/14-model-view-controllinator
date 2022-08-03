@@ -1,3 +1,5 @@
-const homeRoutes = require('./home-routes.js');
+const homeRoutes = require('./home-routes');
 
-router.use('/', homeRoutes);
+router.use('/', home-routes);
+
+module.exports = router;
