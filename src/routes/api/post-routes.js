@@ -68,7 +68,12 @@ router.get('/:id', (req, res) => {
         res.status(404).json({ message: 'No post found with this id' });
         return;
       }
-      res.json(dbPostData);
+
+      //serialize data
+      const post = dbPostData.get({ plain: true });
+
+      //pass data to template
+      res.render('single-post', { post });
     })
     .catch(err => {
       console.log(err);
