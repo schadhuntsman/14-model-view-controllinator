@@ -14,5 +14,12 @@
         </article>
     </li>
 </ol>
+<ol class="post-list">
+    {{#each post as |post|}}
+    <li>
+        {{> post-info post }}
+    </li>
+    {{/each}}
+</ol>
 
 module.exports = router;
