@@ -1,7 +1,8 @@
 const router = require('../routes');
-const homeRoutes = require('../routes/api/home-routes');
+const homeRoutes = require('./api/home-routes');
+const withAuth = require('../utils/auth');
 
-router.use('/', home-routes);
+router.use('/', withAuth, home-routes);
 
 const dashboardRoutes = require('./dashboard-routes');
 

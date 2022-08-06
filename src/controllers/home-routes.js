@@ -3,6 +3,7 @@ const { rest } = require('lodash');
 const sequelize = require('../config/connection');
 const { Post, User, Comment, Blog } = require('../models');
 const { count } = require('../models/Post');
+const withAuth = require('../utils/auth');
 
 router.get('/', (req, res) => {
     Post.findAll({
