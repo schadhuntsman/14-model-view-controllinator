@@ -2,6 +2,7 @@ const router = require('express').Router();
 const { rest } = require('lodash');
 const sequelize = require('../config/connection');
 const { Post, User, Comment, Blog } = require('../models');
+const { count } = require('../models/Post');
 
 router.get('/', (req, res) => {
     Post.findAll({
@@ -46,7 +47,7 @@ router.get('/post/:id', (req, res) => {
     post_url: 'https://handlebarsjs.com/guide/',
     title: 'Handlebars Docs',
     created_at: new Date(),
-    // vote_count: 10,
+    blog_posts: count,
     comments: [{}, {}],
     user: {
       username: 'test_user'
