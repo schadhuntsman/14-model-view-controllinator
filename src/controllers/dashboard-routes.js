@@ -1,8 +1,8 @@
 const router = require('express').Router();
 const sequelize = require('../config/connection');
-const { Post, User, Comment, Blog } = require('../models');
-const withAuth = require('../utils/auth');
+const { Post, User, Comment } = require('../models');
 
+const withAuth = require('../utils/auth');
 
 router.get('/', withAuth, (req, res) => {
     Post.findAll({
@@ -12,10 +12,9 @@ router.get('/', withAuth, (req, res) => {
         },
         attributes: [
             'id',
-            'post_url',
             'title',
+            'content',
             'created_at',
-            [sequelize.literal('(SELECT COUNT(*) FROM blog WHERE post.id = blog.post_id)'), 'blog_count']
         ],
     })
     res.render('dashboard', { loggedIn: true });
@@ -26,10 +25,9 @@ router.get('/edit/:id', withAuth, (req, res) => {
    Post.findByPk(req.params.id, {
     attributes: [
         'id',
-        'post_url',
         'title',
+        'content',
         'created_at',
-        [sequelize.literal('(SELECT COUNT (*) FROM blog_post WHERE post.id = blog.post_id)'), 'blog_count']
     ],
     include: [
         {
@@ -46,22 +44,32 @@ router.get('/edit/:id', withAuth, (req, res) => {
           }
         ]
       })
+
         .then(dbPostData => {
-          if (dbPostData) {
             const post = dbPostData.get({ plain: true });
-            
+            get({
+              plain: true
+            })
+
             res.render('edit-post', {
               post,
               loggedIn: true
             });
-          } else {
-            res.status(404).end();
-          }
-        })
-        .catch(err => {
+          })
+          .catch(err => {
+            console.log(err);
           res.status(500).json(err);
         });
-    });
+      })
+
+  router.get('/new', (req, res) => {
+    res.render('add-post', {
+       loggedIn: true
+      })
+  })
+          
+  
+    
 
 
 module.exports = router;
