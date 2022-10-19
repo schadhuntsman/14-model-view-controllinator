@@ -1,8 +1,7 @@
 const sequelize = require('../config/connection');
-const { STRING, DataTypes } = require("sequelize");
-const { Model } = require("sequelize/types");
+const { Model, DataTypes } = require("sequelize");
 const bcrypt = require('bcrypt');
-// const { init, beforeCreate, beforeSync, beforeUpdate, update } = require("./Post");
+
 
 class User extends Model {
     //set method to run a instance data (per user) to check password
@@ -26,7 +25,7 @@ class User extends Model {
             },
 
             email: {
-                DataTypes: STRING,
+                type: DataTypes.STRING,
                 allowNull: false,
                 unique: true,
                 validate: {
@@ -35,7 +34,7 @@ class User extends Model {
             },
 
             password: {
-                DataTypes: STRING,
+                type: DataTypes.STRING,
                 allowNull: false,
                 validate: {
                     len: [4, 15]

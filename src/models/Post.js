@@ -13,14 +13,14 @@ Post.init(
             AutoIncrement: true
         },
         title: {
-            DataTypes: STRING,
+            type:DataTypes.STRING,
             allowNull: false,
             validate: {
                 len: [1]
             }
         },
         content: {
-            DataTypes: STRING,
+            type: DataTypes.STRING,
             allowNull: false,
             validate: {
                 len: [1]
@@ -28,7 +28,7 @@ Post.init(
         },
 
         user_id: {
-            DataTypes: INTEGER,
+            type: DataTypes.INTEGER,
             reference: {
                 model: 'user',
                 key: 'id'
@@ -42,21 +42,5 @@ Post.init(
         modelName: 'post'
     }
 )
-//create our post model
-// class Post extends Model {
-//     static upvote(body, models) {
-//         return models.Blog.create({
-//             user_id: body.user_id,
-//             post_id: body.post_id
-//         }).then(() => {
-//             return Post.findOne({
-//                 where: {
-//                     id: body.post_id
-//                 },
-                
-//             })
-//         })
-//     }
-// }
 
 module.exports = Post;
