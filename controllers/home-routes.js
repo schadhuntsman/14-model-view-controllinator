@@ -38,10 +38,10 @@ router.get('/', (req, res) => {
       console.log(err);
       res.status(500).json(err);
     });
-  });--
+  });
     
 //get single
-router.get('/', (req, res) => {
+router.get('/post/:id', (req, res) => {
   Post.findOne({
       where: {
         id: req.params.id
@@ -89,45 +89,26 @@ router.get('/', (req, res) => {
 });
 
 
-router.post('/login', (req, res) => {
-    User.findOne({
-        where: {
-            username: req.body.username
-        }
-    }).then(dbUserData => {
-        if (!dbUserData) {
-          res.status(400).json({ message: 'No user with that username' 
-        });
-          return;
-        }
-        req.session.save(() => {
-          req.session.user_id = dbUserData.id;
-          req.session.username = dbUserData.username;
-          req.session.loggedIn = true;
-      
-          res.json({ user: dbUserData, message: 'You are now logged in!' });
-        });
-      });
+router.get('/login', (req, res) => {
+  if (req.session.loggedIn) {
+    res.redirect('/');
+    return;
+  }
+  res.render('login');
+});
 
-        const validPassword = dbUserData.checkPassword(req.body.password);
+router.get('/signup', (req, res) => {
+  if (req.session.loggedIn) {
+    res.redirect('/');
+    return;
+  }
+  res.render('signup');
+});
     
-        if (!validPassword) {
-          res.status(400).json({ message: 'Incorrect credentials!'
-        });
-          return;
-     }
-  });
-
-  req.session.save(() => {
-    req.session.user_id = dbUserData.id;
-    req.session.username = dbUserData.username;
-    req.session.loggedIn = true;
-
-    res.json({ user: dbUserData,
-               message: 'You are now logged in!' 
-      });
-  });
-
+router.get('*', (req, res) => {
+  res.status(404).send("Cannot go there");
+  
+})
 
 
 module.exports = router;
