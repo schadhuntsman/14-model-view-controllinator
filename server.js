@@ -34,11 +34,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', route)
-// sequelize.sync({ force: false }).then(() => {
+sequelize.sync({ force: false }).then(() => {
   app.listen(PORT, () => {
-    sequelize.sync({ force: false })
+    // sequelize.sync({ force: false })
     console.log('Now listening');
   });
-   
+})
 
 
