@@ -2,12 +2,12 @@ const path = require('path');
 const express = require('express');
 const exphbs = require('express-handlebars');
 const session = require('express-session');
-const route = require('./src/routes');
-const withAuth = require('./src/utils/auth');
+const route = require('./controllers');
+const withAuth = require('./utils/auth');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-const sequelize = require("./src/config/connection");
+const sequelize = require("./config/connection");
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 
 const sess = {
@@ -22,7 +22,7 @@ const sess = {
 
 app.use(session(sess));
 
-const helpers = require('./src/utils/helpers');
+const helpers = require('./utils/helpers');
 
 const hbs = exphbs.create({ helpers });
 

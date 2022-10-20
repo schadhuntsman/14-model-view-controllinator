@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const sequelize = require('../config/connection');
-const { User, Post, Comment } = require('../../models');
-
+const { User, Post, Comment } = require('../models');
+//find all 
 router.get('/', (req, res) => {
   Post.findAll({
     attributes: [
@@ -13,23 +13,16 @@ router.get('/', (req, res) => {
     include: 
     [{
       model: Comment,
-      attributes: ['username']
-    },
-  ],
-    
-    include: [
-      {
-        model: User,
-        attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
-        include: {
+      attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+      include: {
           model: User,
           attributes: ['username']
-        }
-      },
-    {
-      model: User,
-      attributes: ['username']
-    }
+      }
+  },
+  {
+    model: User,
+    attributes: ['username']
+  }
   ]
 })
 .then(dbPostData => {
@@ -39,7 +32,7 @@ router.get('/', (req, res) => {
       res.render("homepage", {
         posts,
         loggedIn: req.session.loggedIn
-      }):
+      });
     })
     .catch(err => {
       console.log(err);
@@ -47,32 +40,56 @@ router.get('/', (req, res) => {
     });
   });--
     
-
 //get single
-//create user
-router.post('/', withAuth, (req, res) => {
-  User.create({
-    username: req.body.username,
-    email: req.body.email,
-    password: req.body.password
-  })
-    .then(dbUserData => {
-      req.session.save(() => {
-        req.session.user_id = dbUserData.id;
-        req.session.username = dbUserData.username;
-        req.session.loggedIn = true;
-  
-        res.json(dbUserData);
+router.get('/', (req, res) => {
+  Post.findOne({
+      where: {
+        id: req.params.id
+      },
+          attributes: [
+              'id',
+              'title',
+              'content',
+              'created_at'
+          ],
+          include: [{
+                  model: Comment,
+                  attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+                  include: {
+                      model: User,
+                      attributes: ['username']
+                  }
+              },
+              {
+                  model: User,
+                  attributes: ['username']
+              }
+          ]
+      })
+      .then(dbPostData => {
+        if(!dbPostData) {
+          res.status(404).json({
+            message: 'No posts found with this id'
+          });
+          return;
+        }
+          const posts = dbPostData.get({
+              plain: true
+          });
+
+          res.render('single-post', {
+              posts,
+              loggedIn: req.session.loggedIn
+          });
+      })
+      .catch(err => {
+          console.log(err);
+          res.status(500).json(err);
       });
-    })
-    .catch(err => {
-      console.log(err);
-      res.status(500).json(err);
-    });
-})
+});
 
 
-router.post('/login', withAuth, (req, res) => {
+router.post('/login', (req, res) => {
     User.findOne({
         where: {
             username: req.body.username
@@ -112,15 +129,5 @@ router.post('/login', withAuth, (req, res) => {
   });
 
 
-router.post('/logout', withAuth, (req, res) => {
-  if (req.session.loggedIn) {
-    req.session.destroy(() => {
-      res.status(204).end();
-    });
-  }
-  else {
-    res.status(404).end();
-  }
-});
 
 module.exports = router;
