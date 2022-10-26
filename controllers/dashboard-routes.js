@@ -59,24 +59,6 @@ router.get('/edit/:id', withAuth, (req, res) => {
           }
         ]
       })
-        .then(dbPostData => {
-            const post = dbPostData.get({ plain: true });
-            get({
-              plain: true
-            })
-            res.render('edit-post', {
-              post,
-              loggedIn: true
-            });
-          })
-
-
-          .catch(err => {
-            console.log(err);
-          res.status(500).json(err);
-
-        });
-      })
 
       .then(dbPostData => {
         const posts = dbPostData.map(post => post.get({
@@ -90,8 +72,8 @@ router.get('/edit/:id', withAuth, (req, res) => {
     .catch(err => {
         console.log(err);
         res.status(500).json(err);
-    });
-
+    })
+  })
 
   router.get('/new', (req, res) => {
     res.render('add-post', {
