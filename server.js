@@ -28,6 +28,9 @@ const hbs = exphbs.create({ helpers });
 
 app.engine('handlebars', hbs.engine);
 app.set( 'view engine', 'handlebars');
+app.get('/', (req, res) => {
+  res.render('layouts/main');
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

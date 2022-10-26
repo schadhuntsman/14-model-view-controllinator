@@ -6,7 +6,7 @@ router.get('/edit-comment', (req,res) => {
 
   if (req.session.loggedIn) {
 
-    varPostID = req.body.postid;
+    varpostId = req.body.postId;
     
     res.render('edit-comment', {loggedIn: req.session.loggedIn});
     

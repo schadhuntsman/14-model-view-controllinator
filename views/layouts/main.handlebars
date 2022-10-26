@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="font-src 'self' data:; img-src 'self' data:; default-src 'self' http://121.0.0:3001/">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Just Tech News</title>
   <link rel="stylesheet" href="/stylesheets/style.css">
 </head>
@@ -21,7 +21,7 @@
         {{#if loggedIn}}
         <a href="/dashboard">dashboard</a>
         <button id="logout" class="btn-no-style">logout</button>
-        {{#else}}
+        {{else}}
         <a href="/login">login</a>
         {{/if}}
       </nav>
