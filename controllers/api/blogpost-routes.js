@@ -1,15 +1,15 @@
 const router = require('express').Router();
-const { BlogPost } = require('../../models');
+const { BlogBlogPostBlogPost } = require('../../models');
 const withAuth = require('../../utils/auth.js');
 
 router.post('/', async (req, res) => {
   try {
-    const newBlogEntry = await BlogPost.create({
+    const newBlogBlogPostEntry = await BlogBlogPostBlogPost.create({
         ...req.body,
         user_id: req.session.user_id,
     });
 
-    res.status(200).json(newBlogEntry);
+    res.status(200).json(newBlogBlogPostEntry);
   } catch (err) {
     res.status(400).json(err);
   }
@@ -18,7 +18,7 @@ router.post('/', async (req, res) => {
 router.post('/edit/:id', async (req, res) => {
     try {
         console.log(req.body)
-        const updateBlogEntry = await BlogPost.update(
+        const updateBlogBlogPostEntry = await BlogBlogPostBlogPost.update(
         {
             name: req.body.name,
             post_content: req.body.post_content,
@@ -26,27 +26,27 @@ router.post('/edit/:id', async (req, res) => {
         { where: { id: req.body.id} }
         );
 
-        res.status(200).json(updateBlogEntry);
+        res.status(200).json(updateBlogBlogPostEntry);
     } catch (err) {
         res.status(400).json(err);
     }
 });
 
-//delete blog entry 
+//delete BlogBlogPost entry 
 router.delete('/:id', withAuth, async (req, res) => {
     try {
-    const blogEntryData = await BlogPost.destroy({
+    const BlogBlogPostEntryData = await BlogBlogPostBlogPost.destroy({
         where: {
             id: req.params.id,
             user_id: req.session.user_id,
         },
     });
-    if (!blogEntryData ) {
+    if (!BlogBlogPostEntryData ) {
         res.status(404).json({ message: "No matching posts found."});
         return;
     }
 
-    res.status(200).json(blogEntryData);
+    res.status(200).json(BlogBlogPostEntryData);
 } catch (err) {
     res.status(500).json(err);
 }

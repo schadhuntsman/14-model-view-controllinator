@@ -1,7 +1,7 @@
 <article>
     <a href="/dashboard"> &larr; Back to dashboard</a>
     <h2>
-        Edit Post
+        Edit BlogPost
     </h2>
     <form class="edit-post-form">
         <div>
@@ -9,7 +9,7 @@
             <span>(({{format_url post.post_content}}))</span>
         </div>
         <div>
-            {{post.blog.count}} {{format_plural "point" post.vote_count}}  by you on  {{format_date post.created_at}}
+            {{post.BlogBlogPost.count}} {{format_plural "point" post.vote_count}}  by you on  {{format_date post.created_at}}
             |
             <a href="/post/{{post.id}}">{{post.comments.length}} {{format_plural "comment" post.comment.length}}</a>
         </div>

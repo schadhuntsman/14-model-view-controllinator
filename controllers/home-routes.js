@@ -1,137 +1,153 @@
 const router = require('express').Router();
-const sequelize = require('../config/connection');
-const { User, Post, Comment } = require('../models');
-//find all 
-router.get('/edit-comment', (req,res) => {
-
-  if (req.session.loggedIn) {
-
-    varpostId = req.body.postId;
-    
-    res.render('edit-comment', {loggedIn: req.session.loggedIn});
-    
-    return;
-  }
-
-  res.redirect('/');
-});
+const { BlogEntry, User, Comment } = require('../models');
+const withAuth = require('../utils/auth');
 
 router.get('/', async (req, res) => {
   try {
-    const dbPostData = await Post.findAll({
+    const dbPostData = await BlogEntry.findAll({
+      include: User,
+    });
+
+
+    const posts = dbPostData.map((post) => post.get({ plain: true }));
+    res.render('homepage', {
+      posts: posts,
+      logged_in: req.session.logged_in
+    });
+    
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+
+router.get('/blogentry/:id', async (req, res) => {
+  try {
+    const dbPostData = await BlogEntry.findByPk(req.params.id, {
       include: [
+        User,
         {
-          model: User,
-          attributes: ['username','id'],
+          model: Comment,
+          include: [ User ],
         },
       ],
     });
-      const posts = dbPostData.map((post) => post.get({
-        plain: true
-      }));
-      res.render("homepage", {
-        posts,
-        loggedIn: req.session.loggedIn
-      });
-    } catch (err) {
-      console.log(err);
-      res.status(500).json(err);
-    }
+   
+
+router.get('/edit/:id', async (req, res) => {
+  try {
+    const dbPostData = await BlogEntry.findByPk(req.params.id, {
+      include: [
+        User,
+        {
+          model: Comment,
+          include: [User],
+        },
+      ]
     });
 
-    router.get('/edit-post', (req,res) => {
 
-      if (req.session.loggedIn) {    
-       res.render('edit-post', {loggedIn: req.session.loggedIn,dashboard:true});  
-        return;
-      }
-    
-      res.redirect('/');
-      
+    const post = dbPostData.get({ plain: true });
+    console.log(post)
+    res.render('edit', {
+      ...post,
+      logged_in: req.session.logged_in
     });
-
-    router.get('/create-post', (req,res) => {
-
-      if (req.session.loggedIn) {
-         
-        res.render('create-post', {loggedIn: req.session.loggedIn, dashboard: true});
-              
-        return;
-      }
-        
-      res.redirect('/');
-      
-    });
-    
-    
-//get single
-router.get('/post/:id', (req, res) => {
-  Post.findOne({
-      where: {
-        id: req.params.id
-      },
-          attributes: [
-              'id',
-              'title',
-              'content',
-              'created_at'
-          ],
-          include: [{
-                  model: Comment,
-                  attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
-                  include: {
-                      model: User,
-                      attributes: ['username']
-                  }
-              },
-              {
-                  model: User,
-                  attributes: ['username']
-              }
-          ]
-      })
-      .then(dbPostData => {
-        if(!dbPostData) {
-          res.status(404).json({
-            message: 'No posts found with this id'
-          });
-          return;
-        }
-          const posts = dbPostData.map({
-              plain: true
-          });
-
-          res.render('single-post', {
-              posts,
-              loggedIn: req.session.loggedIn
-          });
-      })
-      .catch(err => {
-          console.log(err);
-          res.status(500).json(err);
-      });
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
 
 
+const post = dbPostData.get({ plain: true });
+res.render('blogentry', {
+  ...post,
+  logged_in: req.session.logged_in
+});
+} catch (err) {
+res.status(500).json(err);
+}
+}); 
+
+router.get('/blogentry', withAuth, async (req, res) => {
+  try {
+    const dbUserData = await User.findByPk(req.session.user_id, {
+    });
+    
+    const identity = req.session.user_id
+   
+    const user = dbUserData.get({ plain: true });
+    
+    const dbPostData = await BlogEntry.findAll({
+      where: {
+        user_id: identity
+      }
+
+    });
+
+    
+
 router.get('/login', (req, res) => {
-  if (req.session.loggedIn) {
-    res.redirect('/');
+  // If the user is already logged in, redirect the request to another route
+  if (req.session.logged_in) {
+    res.redirect('/dashboard');
     return;
   }
+
+
   res.render('login');
 });
 
+
+router.get('/dashboard', withAuth, async (req, res) => {
+  try {
+    const dbUserData = await User.findByPk(req.session.user_id, {
+    });
+
+     const user = dbUserData.get({ plain: true });
+
+    const identity = req.session.user_id
+
+    const dbPostData = await BlogEntry.findAll({
+      where: {
+        user_id: identity
+      }
+    });
+
+    const posts = dbPostData.map((post) => post.get({ plain: true }));
+
+    console.log(posts)
+    res.render('dashboard', {
+      blogentries: posts,
+      ...user,
+      logged_in: req.session.logged_in
+    });
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+const posts = dbPostData.map((post) => post.get({ plain: true }));
+    console.log(posts)
+    res.render('dashboard', {
+      posts: posts,
+      ...user,
+      logged_in: req.session.logged_in
+    });
+
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
 router.get('/signup', (req, res) => {
-  if (req.session.loggedIn) {
-    res.redirect('/');
+
+  if (req.session.logged_in) {
+    res.redirect('/dashboard');
     return;
   }
   res.render('signup');
 });
-    
-router.get('*', (req, res) => {
-  res.status(404).send("Cannot go there");
-})
 
 
 module.exports = router;
