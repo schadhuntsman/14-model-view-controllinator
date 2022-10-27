@@ -21,6 +21,7 @@ class User extends Model {
 
             username: {
                 type: DataTypes.STRING,
+                unique: true,
                 allowNull: false,
             },
 
@@ -38,22 +39,22 @@ class User extends Model {
                 allowNull: false,
                 validate: {
                     len: [4, 15]
-                }
-            }
+                },
+            },
 
         },
     
 {
     hooks: {
-        async beforeCreate(newUser) {
-        newUser.password = await bcrypt.hash(newUser.password, 14);
-        return newUser;
+         beforeCreate: async (userDataNew) => {
+        userDataNew.password = await bcrypt.hash(userDataNew.password, 14);
+        return userDataNew;
         },
 
-        async beforeUpdate(updateUser) {
-            updateUser.password = await bcrypt.hash(updateUser.password, 14);
-            return updateUser
-        }
+        beforeCreate: async (updatedUser) => {
+            updatedUser.password = await bcrypt.hash(updatedUser.password, 14);
+            return updatedUser
+        },
     },
 
     sequelize,
@@ -61,7 +62,7 @@ class User extends Model {
     timestamps: false,
     underscored: true,
     modelName: 'user'
-}
+    }
 );
 
 module.exports = User;
